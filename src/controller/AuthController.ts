@@ -24,7 +24,7 @@ export async function ChangeUserPasswordController(
     const authInfo: IAuthModel = await GetAuthInfoByUserId(Info._id);
     const otp = GenerateOTP();
     const originURL = req.headers.origin;
-    const resePasswordURL = `${originURL}/account/email-verify/${Info.id}`;
+    const resePasswordURL = `${originURL}/account/email/verify/${Info.id}`;
     await SendMail({
       html: html(otp, resePasswordURL),
       receiver: [Info.email],
