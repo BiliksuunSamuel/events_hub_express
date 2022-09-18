@@ -4,6 +4,7 @@ import {
   GetUserByEmailAddress,
   GetUserById,
   GetUserByUsername,
+  ValidateUserInfo,
 } from "../services/UserServices";
 
 export async function UserInfoUpdateMiddleWare(
@@ -40,6 +41,7 @@ export async function RegisterUserMiddleware(
           .status(404)
           .send(`Email Address ${info.email} Is Already Registered`);
       }
+      ValidateUserInfo(info);
       next();
     }
   } catch (error) {

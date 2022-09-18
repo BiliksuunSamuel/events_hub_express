@@ -42,6 +42,7 @@ function RegisterUserMiddleware(req, res, next) {
                         .status(404)
                         .send(`Email Address ${info.email} Is Already Registered`);
                 }
+                (0, UserServices_1.ValidateUserInfo)(info);
                 next();
             }
         }
