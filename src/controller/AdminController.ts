@@ -4,6 +4,7 @@ import {
   AddAdminInfo,
   GetAdminByEmail,
   GetAdmins,
+  UpdateAdminInfo,
 } from "../services/AdminServices";
 import { AddAuthInfo, GetAuthInfoByUserId } from "../services/AuthServices";
 import {
@@ -86,6 +87,15 @@ export async function GetAdminAccountsController(req: Request, res: Response) {
     );
   } catch (error) {
     console.log(error);
+    res.status(404).send(error);
+  }
+}
+
+export async function UpdateAdminInfoController(req: Request, res: Response) {
+  try {
+    const info: IAdminModel = req.body;
+    await UpdateAdminInfo(info);
+  } catch (error) {
     res.status(404).send(error);
   }
 }

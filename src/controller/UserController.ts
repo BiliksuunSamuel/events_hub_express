@@ -1,4 +1,4 @@
-import { IAuthModel, IUserModel } from "./../interface/index";
+import { IAuthModel, ICommentModel, IUserModel } from "./../interface/index";
 import { Request, Response } from "express";
 import {
   AddNewUser,
@@ -18,6 +18,9 @@ import {
   HashPassword,
   VerifyPassword,
 } from "../utilities";
+import { AddComment } from "../services/ReviewServices";
+import { SendMail } from "../services/MailServices";
+import { html } from "./AuthController";
 
 interface ILoginParams {
   email: string;
@@ -61,19 +64,26 @@ export async function UserRegisterController(req: Request, res: Response) {
   try {
     const info: IRegisterInfo = req.body;
     info.id = GenerateId();
-    const user = await GetUserByEmailAddress<IUserInfo | null>(info.email);
-    if (user) {
-      res.status(400).send("Email Address Already Registered");
-    } else {
-      const User = await AddNewUser<IUserInfo>(info);
-      const authInfo: IAuthModel = {
-        password: await HashPassword(info.password),
-        otp: GenerateOTP(),
-        userId: User._id,
-      };
-      await AddAuthInfo(authInfo);
-      res.send(User);
-    }
+    const otp = GenerateOTP();
+    await SendMail({
+      receiver: [info.email],
+      subject: "Account Verification Code",
+      text: `You account verification code is ${otp}`,
+      html: html(
+        otp,
+        req.headers.origin
+          ? req.headers.origin + `/account/email/verify/${info.id}`
+          : ""
+      ),
+    });
+    const User = await AddNewUser<IUserInfo>(info);
+    const authInfo: IAuthModel = {
+      password: await HashPassword(info.password),
+      otp,
+      userId: User._id,
+    };
+    await AddAuthInfo(authInfo);
+    res.send(User);
   } catch (error) {
     console.log(error);
     res.status(401).send(error);
@@ -90,6 +100,19 @@ export async function GetUsersController(req: Request, res: Response) {
   }
 }
 
+export async function AdminUserInfoUpdateController(
+  req: Request,
+  res: Response
+) {
+  try {
+    const info: IUserModel = req.body;
+    await UpdateUserInfo(info);
+    res.send(await GetUsers());
+  } catch (error) {
+    res.status(404).send(error);
+  }
+}
+
 interface IOTPVerificationParams {
   id: string;
   otp: string;
@@ -99,16 +122,18 @@ export async function VerifyUserOTPController(req: Request, res: Response) {
   try {
     const data: IOTPVerificationParams = req.body;
     const userInfo = await GetUserById<IUserInfo | null>(data.id);
+
     if (userInfo) {
       const authInfo = await GetAuthInfoByUserId<IAuthModel | null>(
         userInfo._id
       );
-      if (authInfo && Boolean(data.otp.trim() === authInfo.otp)) {
+      if (authInfo && Boolean(data.otp === authInfo.otp)) {
         userInfo.authenticated = 1;
-        await UpdateUserInfo({ ...userInfo, status: 1 });
+
+        await UpdateUserInfo(userInfo);
         res.send(userInfo);
       } else {
-        res.status(400).send("Invalid User Details,Access Denied");
+        res.status(400).send("Invalid OTP");
       }
     } else {
       res.status(400).send("Invalid User Details,Access Denied");
@@ -119,15 +144,31 @@ export async function VerifyUserOTPController(req: Request, res: Response) {
   }
 }
 
-{
-  /*
-                        I wish i can use you for all my Commit❤️ *messages,
-                        it Bash❤️ me that i didn't meet you that early, i
-                        would have made you my Main❤️ *branch, but nevertheless,
-                        considering all the situations Pulling❤️ us apart, i 
-                        will Push❤️ through with --force, *merge all issues,
-                        challenges and make you the Master❤️ *branch,i will choose
-                        to Clone❤️ you over and over, had all things been *clean,
-                        you would have been my first and last *commitment.❤️❤️
-*/
+export async function AddUserCommentController(req: Request, res: Response) {
+  try {
+    const info: ICommentModel = req.body;
+    await AddComment(info);
+    res.send("Review Submitted Successfully");
+  } catch (error) {
+    res.status(404).send(error);
+  }
+}
+
+export async function GetUserByEmailController(req: Request, res: Response) {
+  try {
+    const { email } = req.query;
+
+    if (email) {
+      const Info = await GetUserById(email as string);
+      if (Info) {
+        res.send(Info);
+      } else {
+        res.status(404).send("User not found!!");
+      }
+    } else {
+      res.status(404).send("User not found!!");
+    }
+  } catch (error) {
+    res.status(404).send(error);
+  }
 }

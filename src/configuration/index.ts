@@ -16,6 +16,6 @@ export default {
     "mongodb+srv://samuelbills:77045109@cluster0.nakki.mongodb.net/eventshub",
   mailHost: process.env.mailHost,
   mailPassword: process.env.mailPassword || "jtzmzcvqiypfvbjz",
-  mailPort: 465,
+  mailPort: 587, //465
   mailUser: process.env.mailUser,
 };

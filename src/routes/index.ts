@@ -22,4 +22,5 @@ export const GetRoutes = {
   events_get: `/api/events/get`,
   users_get: "/api/users/get",
   accounts_get: `/api/admin/accounts/get`,
+  get_user_by_email: "/api/user/get/?email",
 };

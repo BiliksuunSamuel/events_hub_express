@@ -14,11 +14,24 @@ export function AddEvent<T>(info: IEventModel) {
   });
 }
 
+export function GetEventById<T>(id: string) {
+  return new Promise<T>((resolve, reject) => {
+    try {
+      EventModel.findOne({ id }, (error: any, results: T) => {
+        error && reject(error);
+        resolve(results);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 export function UpdateEventInfo(info: IEventModel) {
   return new Promise(function (resolve, reject) {
     try {
       EventModel.findOneAndUpdate(
-        { userId: info.userId },
+        { id: info.id },
         { ...info },
         (error: Error) => {
           error && reject(error);
@@ -37,6 +50,19 @@ export function GetEvents<T>() {
       EventModel.find((error: Error, results: T) => {
         error && reject(error);
         resolve(results);
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export function DeleteEvent(id: string) {
+  return new Promise(function (resolve, reject) {
+    try {
+      EventModel.findOneAndDelete({ id }, (error: Error) => {
+        error && reject(error);
+        resolve(true);
       });
     } catch (error) {
       reject(error);

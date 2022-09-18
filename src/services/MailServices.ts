@@ -4,7 +4,7 @@ import configuration from "../configuration";
 const Transporter = nodemailer.createTransport({
   port: configuration.mailPort,
   host: configuration.mailHost,
-  secure: true,
+  secure: false,
   auth: {
     user: configuration.mailUser,
     pass: configuration.mailPassword,
@@ -12,7 +12,7 @@ const Transporter = nodemailer.createTransport({
 });
 
 interface IProps {
-  receiver: string;
+  receiver: string[];
   subject: string;
   text: string;
   html: string;
@@ -20,7 +20,7 @@ interface IProps {
 export function SendMail(info: IProps) {
   return new Promise(function (resolve, reject) {
     try {
-      Transporter.sendMail(info)
+      Transporter.sendMail({ ...info, to: info.receiver })
         .then((response) => resolve(response))
         .catch((error) => reject(error));
     } catch (error) {

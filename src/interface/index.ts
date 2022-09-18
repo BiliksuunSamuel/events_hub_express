@@ -5,6 +5,7 @@ export interface IUserModel {
   status: number;
   token: string;
   id: string;
+  role: number;
 }
 
 export interface ILocationModel {
@@ -22,7 +23,7 @@ export interface IEventModel {
   image: string;
   location: ILocationModel;
   address: IAddressModel;
-  eventTime: any;
+  eventTime: string;
   id: string;
 }
 

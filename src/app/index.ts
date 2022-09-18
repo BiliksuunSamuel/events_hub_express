@@ -2,7 +2,12 @@ import express from "express";
 import cors from "cors";
 import "../database";
 import fileUpload from "express-fileupload";
-import Router, { AdminRouter, EventsRouter, UserRouter } from "../router";
+import Router, {
+  AdminRouter,
+  AuthRouter,
+  EventsRouter,
+  UserRouter,
+} from "../router";
 import moment from "moment";
 import { GenerateId } from "../utilities";
 //
@@ -19,7 +24,7 @@ app.use(UserRouter);
 app.use(AdminRouter);
 app.use(Router);
 app.use(EventsRouter);
+app.use(AuthRouter);
 //
-console.log(GenerateId());
 
 export default app;

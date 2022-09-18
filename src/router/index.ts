@@ -6,6 +6,7 @@ const Router = express.Router();
 export { default as UserRouter } from "./UserRouter";
 export { default as AdminRouter } from "./AdminRouter";
 export { default as EventsRouter } from "./EventRouter";
+export { default as AuthRouter } from "./AuthRouter";
 
 Router.get("/", async (req: Request, res: Response) => {
   try {

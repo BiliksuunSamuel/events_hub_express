@@ -70,13 +70,32 @@ export function UpdateUserInfo(info: IUserModel) {
   return new Promise(function (resolve, reject) {
     try {
       UserModel.findOneAndUpdate(
-        { email: info.email },
-        { ...info },
+        { id: info.id },
+        {
+          role: info.role,
+          status: info.status,
+          username: info.username,
+          email: info.email,
+          authenticated: info.authenticated,
+        },
         (error: Error) => {
           error && reject(error);
           resolve(true);
         }
       );
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export function GetUserByUsername<T>(username: string) {
+  return new Promise<T>(function (resolve, reject) {
+    try {
+      UserModel.findOne({ username }, (error: Error, results: T) => {
+        error && reject(error);
+        resolve(results);
+      });
     } catch (error) {
       reject(error);
     }

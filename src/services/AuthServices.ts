@@ -37,7 +37,7 @@ export function UpdateAuthInfo(info: IAuthModel) {
     try {
       AuthModel.findOneAndUpdate(
         { userId: info.userId },
-        { password: info.password, opt: info.otp },
+        { password: info.password, otp: info.otp },
         (error: Error) => {
           error && reject(error);
           resolve(true);

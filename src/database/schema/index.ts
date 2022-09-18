@@ -48,6 +48,7 @@ export const UserSchema = new mongoose.Schema({
   status: Number,
   token: String,
   id: String,
+  role: Number,
 });
 
 export const AuthSchema = new mongoose.Schema({
