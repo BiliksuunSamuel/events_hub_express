@@ -34,6 +34,7 @@ function AddEventController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const info = JSON.parse(req.body.info);
+            info.dateAdded = (0, moment_1.default)().format();
             console.log(info);
             const files = req.files;
             if (files) {

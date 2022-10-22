@@ -26,6 +26,7 @@ export async function GetEventsController(req: Request, res: Response) {
 export async function AddEventController(req: Request, res: Response) {
   try {
     const info: IEventModel = JSON.parse(req.body.info);
+    info.dateAdded = moment().format();
     console.log(info);
     const files: FileArray | null | undefined = req.files;
     if (files) {
