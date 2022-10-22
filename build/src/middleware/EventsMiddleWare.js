@@ -10,18 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateEventStatusControllerMiddleWare = exports.UpdateEventControllerMiddleware = exports.DeleteEventControllerMiddleware = exports.ValidateEventInfoMiddleWare = void 0;
-const functions_1 = require("../functions");
 const EventServices_1 = require("../services/EventServices");
 const Validation_1 = require("../utilities/Validation");
 function ValidateEventInfoMiddleWare(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const info = req.body;
+            const info = JSON.parse(req.body.info);
             const files = req.files;
-            if (files) {
-                const imageData = files.file.data;
-                info.image = yield (yield (0, functions_1.UploadImage)(imageData)).url;
-            }
             (0, Validation_1.ValidateEventInfo)(info);
             next();
         }
@@ -50,7 +45,7 @@ exports.DeleteEventControllerMiddleware = DeleteEventControllerMiddleware;
 function UpdateEventControllerMiddleware(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const info = req.body;
+            const info = JSON.parse(req.body.info);
             const Info = yield (0, EventServices_1.GetEventById)(info.id);
             if (!Info) {
                 return res.status(404).send("Record Not Found, Operation Failed");

@@ -17,13 +17,7 @@ export async function GetEventsController(req: Request, res: Response) {
     const { year } = req.query;
 
     const data = await GetEvents<IEventModel[]>();
-    res.send(
-      data.map((d) => {
-        if (moment(d.dateAdded).format("YYYY") === year) {
-          return d;
-        }
-      })
-    );
+    res.send(data.filter((d) => moment(d.dateAdded).format("YYYY") === year));
   } catch (error) {
     res.status(404).send(error);
   }
@@ -31,15 +25,15 @@ export async function GetEventsController(req: Request, res: Response) {
 
 export async function AddEventController(req: Request, res: Response) {
   try {
-    const info: IEventModel = req.body;
+    const info: IEventModel = JSON.parse(req.body.info);
+    console.log(info);
     const files: FileArray | null | undefined = req.files;
-
     if (files) {
       const fileObject: any = files.file;
       const dataUrl: any = await ConvertToDataURL(fileObject.data);
       const base64 = dataUrl.toString().split("\\")[0];
-      const res = await UploadImage(`data:image/png;base64,${base64}`);
-      info.image = res.url;
+      const results = await UploadImage(`data:image/png;base64,${base64}`);
+      info.image = results.url;
       info.id = GenerateId();
       const Info = await AddEvent(info);
       res.send("Event Added Successfully");
@@ -47,13 +41,14 @@ export async function AddEventController(req: Request, res: Response) {
       res.status(404).send("Event Image Required");
     }
   } catch (error) {
+    console.log(error);
     res.status(404).send(error);
   }
 }
 
 export async function UpdateEventInfoController(req: Request, res: Response) {
   try {
-    const info: IEventModel = req.body;
+    const info: IEventModel = JSON.parse(req.body.info);
     const files: FileArray | null | undefined = req.files;
     if (files) {
       const fileObject: any = files.file;
